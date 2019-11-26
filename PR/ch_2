@@ -1,0 +1,56 @@
+Chapter 2 -- A Tour of Rust
+
+In this chapter we:
+    - built some functions
+    - wrote some tests
+    - built a web server
+    - explored concurrency
+    - were introduced to error handling in Rust
+    - were introduced to `match` expressions
+    - were introduced to the `Option<T>` type
+
+- std::env::args() returns an iterator, which we can loop through
+- the #[test] marker is called an attribute
+    - by marking a function as a #[test], Cargo will run that function as a test
+    - tests make heavy use of the assert!(), assert_eq!(), and assert_ne!() macros
+    - test functions can sit right alongside Rust source functions
+
+- Result<T, E> is the type returned by Rust functions that can fail
+    - `Result<T, E>` is an enum with two variants:
+        - Ok(T) => success!
+        - Err(e) => the operation failed
+
+    - the `?` operator unwraps Results, and propagates errors to the caller if the call fails
+    - you can't use `?` in fn main(), because main() doesn't return anything, and `?` returns Result!
+        - so use the .expect() method instead
+
+- Similarly Option<T> is an enum with two variants:
+    - Some(T) => the option holds data
+    - None => it is 'nil'
+
+- you can write a generic function, for example ... 
+
+        fn parse_args<T>(t: T) -> String {
+            // do stuff
+        }
+
+    ... is a function generic over T, where T is any type.
+
+    Similarly ... 
+
+        fn parse_arg<T: FromStr>(t: T) -> String {
+            // do stuff
+        }
+    
+    ... is a function generic over T, where T is any type that *implements* the `FromStr` trait.
+
+- structs can be generic too, for example ...
+
+        struct Thing<T> {
+            field_one: T,
+            field_two: T,
+        }
+
+- one great property of Rust is how it enables safe, concurrent programming
+    - for example, for data protected by a Mutex, Rust eliminates data races by making it 
+      impossible for you to use data until you've acquired the Mutex.  (Data is held in the mutex.)

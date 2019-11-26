@@ -1,0 +1,10 @@
+Chapter 1 -- Why Rust?
+
+Zero-cost abstraction: "what you don't use, you don't pay for.  And what you do use,
+you couldn't have hand-coded any better yourself."
+
+Systems programming languages (primarily C and C++) have some pitfalls:
+    1. they are prone to security vulnerabilities due to memory leaks
+    2. concurrent programming is notoriously difficult
+
+Rust eliminates these types of errors through its ownership, borrowing, and move systems.

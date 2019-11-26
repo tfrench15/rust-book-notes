@@ -1,0 +1,22 @@
+Chapter 1 -- Getting Started
+
+`$ rustup` to install and update
+`$ rustc` to compile a Rust program
+
+`$ cargo new <<PROJECT>>` to create a new PROJECT
+
+fn main() {
+    // is the entry point to Rust programs
+}
+
+// Hello World
+fn main() {
+    println!("Hello, World!")
+}
+
+`println!()` is a Rust macro, not a function
+
+`$ cargo build` builds a cargo project 
+`$ cargo run` builds and runs a cargo project 
+`$ cargo check` checks whether a program compiles (but doesn't build) -- faster compile check!
+

@@ -1,0 +1,21 @@
+Chapter 2 -- Programming a Guessing Game
+
+- `use std::io`; allows you to bring the std::io package into scope
+- loop { ... } creates an infinite loop, which can be broken with the `break` keyword, or if there's a `panic()`
+- cmp::Ordering is an enum type, with variants Greater, Less, and Equal
+
+- match expressions are powerful ways of handling lots of different patterns, and guaranteeing every case is handled.
+    - for example:
+
+    match guess.cmp(&secret_number) {
+        Ordering::Greater => { // handle case },
+        Ordering::Less => { // handle case },
+        Ordering::Equal => { // handle case },
+    }
+
+- Cargo makes it easy to use external crates, and keep packages compatible with SemVer
+
+- the .expect() method handles the `Result<>` type which is returned by methods or functions that can error.
+    - if the result is Ok(data), then .expect() returns `data`
+    - if the result is Err(e), then .expect() crashes with the provided error message.
+

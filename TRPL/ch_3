@@ -1,0 +1,105 @@
+Chapter 3 -- Common Programming Concepts
+
+- to declare variables, use the `let` keyword.  For example ...
+
+    let x = 5;
+
+- variables are immutable by default.  For example, this will cause a compiler error ...
+
+    let x = 5;
+    x = 6;
+
+- to allow a variable to be mutable, use the `mut` keyword.  For example ...
+
+    let mut x = 5;
+    x = 6;
+
+- Rust also allows you to _shadow_ variables, like so ...
+
+    let x = 6;
+    let x = x + 1;
+    let x = x * 2;
+
+... note that in this example x was not declared `mut`, but by shadowing, we effectively created
+a new variable that just happened to have the same name.
+
+- you can declare constants, which are never allowed to change, using the `const` keyword ...
+
+    const API_KEY: String = String::from("insert_api_key_here");
+
+- Rust convention dictates that constants are capitalized with words separated by underscores.
+
+- Rust is an expression language.  In Rust programs, each line is a statement (ending with a `;`) or an expression.
+
+    // function returning the expression `5`
+    fn five() -> i32 {
+        let x = 5;
+        x
+    }
+
+    // function returning nothing, there's nothing to evaluate
+    fn five() {
+        let x = 5;
+    }
+
+    // functions can return early using the `return` keyword, but idiomatic Rust functions return the last expression, like so ...
+    fn add(x: i32, y: i32) -> i32 {
+        x + y
+    }
+
+    ... as opposed to ...
+    fn add(x: i32, y: i32) -> i32 {
+        return x + y
+    }
+
+    - this took some getting used to for me, coming from Python and Go
+
+- Expressions are omnipresent when talking about control flow as well ...
+
+    let x = 5;
+
+    if x < 3 {
+        println!("x is small");
+    } else {
+        println!("x is big");
+    }
+
+- Rust has three kinds of loops, `loop { ... }`, `while { ... }`, and `for { ... }`
+
+- `loop` creates an infinite loop ...
+
+    loop {
+        print!("forever, and ever...");
+    }
+
+- infinite loops can be broken with the `break` keyword
+
+- `while` loops are convenient here ... 
+
+    let mut counter = 10;
+
+    while counter > 0 {
+        println!("{}", counter)
+
+        counter -= 1;
+    }
+
+    print!("Liftoff!");
+
+- most common, though, are `for` loops.
+    - you can write for loops over collections, ranges, iterators ... 
+
+        for i in 0..100 {
+            // do stuff
+        }
+
+        let alphabet = vec!["a", "b", "c", ... , "z"];
+        for letter in alphabet.iter() {
+            // do stuff
+        }
+
+        // or as in the countdown example above ...
+        for num in (1..=10).rev() {
+            // do stuff
+        }
+
