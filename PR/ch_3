@@ -1,0 +1,94 @@
+Chapter 3 -- Basic Types
+
+Integer Types:
+    - unsigned
+        - u8
+        - u16
+        - u32
+        - u64
+        - usize
+    - signed
+        - i8
+        - i16 
+        - 132
+        - i64
+        - isize
+    - floating
+        - f32
+        - f64
+
+Collection Types:
+    - Tuples
+        - can include multiple types, don't need to be the same
+
+            let tup = (3.14, "hello", 5);
+        
+        - deconstruct tuples by using pattern matching ...
+
+            let (x, y, z) = tup;
+
+            // x = 3.14, y = "hello", z = 5
+
+        - access individual elements ...
+
+            let float = tup.0;
+            let str = tup.1;
+            let int = tup.2;
+
+    - Arrays: [T; N] where T is the type and N is the number of elements
+        - aren't growable, must all have same type:
+
+    - Vectors: Vec<T> where T is the type.  Vecs are heap-allocated, and growable / shrinkable
+        - create vecs using ...
+            - macros:
+
+                let v = vec![1, 2, 3, 4, 5];
+
+            - associated functions:
+
+                let v = Vec::new();
+
+        - lots of methods for growing and shrinking ...
+
+            let v = vec![1, 2, 3, 4, 5];
+
+            v.push(6);
+            v.pop(); // returns Option<T>
+
+    - Slices: &[T].  These are references to a Vec or array 
+        - acquire a mutable reference: &mut [T]
+
+    - Structs -- there are multiple kinds!
+        - named-field structs ...
+
+            struct Person {
+                age: u32,
+                name: String,
+            }
+        
+        - tuple structs ...
+
+            struct Person(u32, name)
+
+    - Enums
+
+        enum Position {
+            Center,
+            Forward,
+            Goalie(u32), // variants can hold data
+        }
+
+    - String and &str (string slice)
+        - create with ...
+            - associated functions:
+
+                let name = String::from("Jane");
+                let mut home = String::new();
+            
+            - methods:
+
+                let name = "Jane".to_string();
+
+        - &str is analagous to &[T]; that is, a reference to an owned type
+
+    
