@@ -1,0 +1,41 @@
+Chapter 4 -- Ownership
+
+- every value has an owner, its variable
+- Rust's system of ownership and moves makes it different than languages with a GC 
+which maintains reference counts and then controls memory cleanup, and languages like C++, where certain
+operations lead to potentially expensive "deep copies".
+
+- Ownership in Rust is about a fundamental tradeoff.  You get memory safety and blazingly fast performance,
+at the cost of adhering to Rust's ownership and borrowing rules which, at first, might seem inflexible.
+But there is enough flexibility in the language where this tradeoff is one you'd like to make every time.
+
+- In Rust, values move ...
+
+    {
+        let s1 = String::from("hi there");
+        let s2 = s1; // the string "hi there" moves into `s2`.  `s1` is no longer valid.
+    }
+
+- values move upon assignment, and when passed into functions, for example
+
+    let s1 = String::from("hello");
+
+    fn show_ownership(s: String) {
+        print!(s);
+    }
+
+    // s1 moves into the function call and is no longer valid
+    show_ownership(s1);
+
+- There are types Rc<T> and Arc<T> which do allow multiple variables to point to the same value.
+    - they are fundamentally the same, Arc<T> is thread-safe at the cost of a performance penalty.
+    - if you don't need thread-safety, use Rc<T>
+
+    - these types are exactly like the types they 'contain'
+
+        let s: Rc<String> = String::from("hello");
+
+        // can call String methods on s
+
+- Be mindful of how many references you have to a value.  You can have multiple immutable references, but 
+never more than one mutable reference.
