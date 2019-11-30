@@ -1,0 +1,95 @@
+Chapter 4 -- Ownership
+
+Ownership is Rust's most unique feature; it's the feature that eliminates the need for manual 
+memory management, without having a garbage compiler.  
+    - this is a big reason why Rust is so popular, it is fast and completely memory-safe
+
+A variable's scope refers to the blocks where it is valid, for example ...
+
+    {
+        let s = "hello";  // `s` is brought into scope
+
+        // do stuff with `s`
+
+    } // `s` goes out of scope here
+
+Furthermore ...
+
+    {
+        let v1 = "hello";
+
+        {
+            let v2 = "world";
+
+        } // `v2` goes out of scope here ... 
+
+        // ... and so you can't use `v2` here
+
+    } // here `v1` goes out of scope
+
+Rules of ownership:
+
+    1. every variable has an owner
+    2. memory is freed when variables go out of scope
+    3. can't have multiple owners
+
+Stack vs. Heap
+
+- the stack is super fast, easy to push data on and pop data off, but only if data is of a known size
+    - think string literals, integer types (i32, u8, etc.) are pushed onto the stack
+- the heap is slower; you allocate data into a blob of memory, but it's harder to know exactly where the machine will store it
+    - think Vecs, Strings, etc. are allocated on the heap.
+
+Consider the following example ...
+
+    fn ownership_examples(s: String) -> String { // the string `s` is moved into the function
+        let s2 = s; // `s` is moved into `s2` so is no longer valid
+
+        let length2 = s2.len();
+
+        let length1 = s.len(); // ERROR!  `s` was moved into `s2` and is no longer valid.
+
+        s2 // `s2` is returned from the function to the caller
+    }
+
+To make this work, you can use the `clone()` method ...
+
+    fn clone_example(s1: String) -> String {
+        let s2 = s1.clone(); // we cloned `s1`, not moved it, so it's still valid
+
+        // do stuff with `s1` and `s2`
+
+        // return a String
+    }
+
+... however, cloning is potentially expensive, so only use that method if you must
+
+Fixed-size types implement the `Copy` trait, which allow you to "move" a variable without cloning it ...
+
+    fn show_off_copy_vars() -> i32 {
+        let x = 5;
+
+        let y = x; // there's not a move here, because the type of `x` (i32) implements Copy
+
+        y
+    }
+
+Instead of forcing you to constantly move and return ownership of data, you can 'borrrow references'
+
+For example ...
+
+    // `s` is not moved into this function as above.  Instead, the function borrows a reference to a String, which is passed in
+    fn take_a_string_slice(s: &str) -> usize { // s is a string slice, a reference to a String
+        s.len()
+    }
+
+Similarly, you can get references to Vecs and arrays ...
+
+    fn more_refs() {
+        let vec = vec![1, 2, 3, 4, 5];
+
+        let ref = &vec[1..4]; // yields a reference to [2, 3, 4]; the type of `ref` is &[i32]
+    }
+
+
+
