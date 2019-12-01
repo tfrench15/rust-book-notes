@@ -1,0 +1,128 @@
+Chapter 5 -- Using Structs to Structure Related Data
+
+- Structs allow you to build custom types that group related pieces of data together ...
+
+        struct User {
+            email: String,
+            sign_in_count: u32,
+            active: bool,
+        }
+
+        struct Triangle {
+            side_one: u32,
+            side_two: u32, 
+            side_three: u32,
+        }
+
+- To create a struct, provide values for each field.
+
+        let triangle = Triangle {
+            side_one: 5,
+            side_two: 8,
+            side_three: 7,
+        };
+
+        let user = User {
+            email: String::from("hello@world.com"),
+            sign_in_count: 4,
+            active: true,
+        };
+
+- Rust also has tuple structs, which are essentially named tuples.  These are helpful to distinguish the type of 
+your tuple.  For example ...
+
+        // these are different types, despite each tuple holding the same data
+        struct Color(u32, u32, u32);  
+        struct Point(u32, u32, u32);
+
+        let origin = Point(0, 0, 0);
+        let green = Color(0, 255, 0);
+
+    - in tuple structs, the fields are not named, however, so they convey less information
+
+- Define methods as functions inside of `impl { ... }` blocks, taking `self` as the first parameter
+
+        struct Rectangle {
+            width: u32,
+            height: u32,
+        }
+
+        impl Rectangle {
+            // area calculates the area of a rectangle.
+            fn area(&self) -> u32 {
+                self.width * self.height
+            }
+
+            // can_hold returns whether the Rectangle can fully hold the other Rectangle.
+            fn can_hold(&self, other: &Rectangle) -> bool {
+                self.width > other.width && self.height > other.height
+            }
+        }
+
+    - then, invoke the methods using the dot operator ...
+
+        let rect1 = Rectangle {
+            width: 4, 
+            height: 5,
+        };
+
+        let rect2 = Rectangle {
+            width: 3,
+            height 4,
+        };
+
+        let area1 = rect1.area(); // 20
+
+        let contains = rect1.can_hold(&rect2); // true
+
+    - Methods always take `self` as the first parameter, in one of three forms ...
+        // borrow read-only reference to the instance; don't consume it
+        1. fn method(&self) { ... }
+
+        // borrow mutable reference to the instance; can write to it
+        2. fn method(&mut self) { ... }
+
+        // consume the instance -- this is rare!
+        3. fn method(self) { ... }
+
+- Inside `impl` blocks you can create associated functions, which are tied to the struct but don't take `self`
+    - these are often used for creating new instances of the struct ...
+
+        impl Rectangle {
+            fn new(width: u32, height: u32) -> Self {
+                Rectangle {
+                    width,
+                    height,
+                }
+            }
+
+            fn square(dimensions: u32) -> Self {
+                Rectangle {
+                    width: dimensions,
+                    height: dimensions,
+                }
+            }
+        }
+
+    - invoke associated functions using `::`, namespaced under the struct type ...
+
+        let rect = Rectangle::new(4, 5);
+        let square = Rectangle::square(3);
+
+    - other examples of associated functions we've seen include ...
+        
+        let email = String::from("hello@world.com");
+        let mut name = String::new();
+
+- Struct fields can be references ... 
+
+        struct Person {
+            name: &str,
+            age: u32,
+        }
+
+    ... but this requires specifying a lifetime to ensure the struct doesn't outlive the data it points to
+
+    (this will be covered in a future chapter)
+
+
