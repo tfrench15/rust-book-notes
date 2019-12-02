@@ -1,0 +1,90 @@
+Chapter 6 -- Enums and Pattern Matching
+
+- Structs are useful for grouping related pieces of data into a single entity
+- Enums are different; they are great types for characterizing when a certain value can either be X _or_ Y
+
+- As an example, there are two kinds of IP Addresses, v4 and v6.  So it's natural to represent this as an enum ...
+
+        enum IpAddr {
+            V4,
+            V6,
+        }
+
+- Then we can pass an `IpAddr` to any function that expects and IP Address, regardless of whether it's a v4 or v6 IP Address.
+
+        fn process_ip_address(addr: IpAddr) {
+            match addr {
+                IpAddr::V4 => // do stuff,
+                IpAddr::V6 => // do stuff,
+            }
+        }
+
+- Just as with structs, enums can have methods which are defined in an `impl` block
+
+        impl IpAddr {
+            fn method(&self) {
+                // do stuff with an instance of IpAddr
+            }
+        }
+
+- Enum variants can also hold data, and the data doesn't need to be uniform across the variants ...
+
+        enum Message {
+            Quit,
+            Alert(String),
+            Code(i32, i32),
+        }
+    
+- Rust has a `match` operator which is extremely powerful and amazing.  It allows you to write code to handle every
+possible variant of an enum, can match on any kind of pattern, and provides exhaustive checking -- meaning that you 
+aren't allowed to 'forget' to handle a possible case.
+
+        enum Coin {
+            Penny,
+            Nickel,
+            Dime, 
+            Quarter,
+        }
+
+        // Note how we check all possible variants of coin, and write code for each arm!
+        fn value_of_coin(coin: Coin) -> u32 {
+            match coin {
+                Coin::Penny => 1,
+                Coin::Nickel => 5,
+                Coin::Dime => 10,
+                Coin::Quarter => 25, 
+            }
+        }
+
+- Enums are ubiquitous in Rust, and one of the most common enums is the Option<T> enum, which is *everywhere*.
+
+        // Option is either something or nothing
+        enum Option<T> {
+            Some(T),
+            None,
+        }
+
+- Option<T> comes with many useful methods, check the std library.
+    - one thing that makes `Option`s so amazing is that it essentially eliminates the possibility of having null pointers.
+    - Rust will literally not compile your code unless you've checked that the Option is something or nothing.  No null pointers!
+
+    - For example ...
+
+        fn vacation_days_counter(days: Option<u32>) {
+            match days {
+                Some(num) => println!("You have {} vacation days left!", num),
+                None => print!("No more vacation left"),
+            }
+        }
+
+    - this example also highlights `match` expressions ability to pull data out of an enum.  In the case where there is Some(data), 
+    we were able to assign the data held in the Option to `num`.
+
+- The `if let` construct is also extremely useful in the case where we may want to use a `match` expression, but only care
+about one variant ...
+
+        if let Some(data) = coin {
+            // match on coin, if there's a match, do stuff with `data`
+        } else {
+            // do other stuff
+        }
