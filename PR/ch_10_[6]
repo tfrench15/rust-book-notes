@@ -1,0 +1,83 @@
+Chapter 10 -- Enums and Patterns -- [maps to Chapter 6 in TRPL]
+
+- Enums are common in functional languages, but new to systems languages; they are also known as
+    - sum types
+    - algebraic data types
+
+- C has enums, but they are far less powerful than enums in Rust
+
+- an Enum is an incredibly useful tool to structure data when an object can be one thing or another
+
+        enum Color {
+            Red,
+            Blue,
+            Yellow,
+            Green,
+        }
+
+    - of the options in the enum are called variants, and they are namespaced under the name of the enum
+
+        let red = Color::Red;
+        let blue = Color::Blue;
+
+- One thing that is unique and powerful about enums in Rust is that they can hold data
+
+        enum Color {
+            Red(u32, u32, u32),
+            Blue(u32, u32, u32),
+            Yellow,
+            Green(String),
+        }
+
+- Enums can be generic
+
+        enum Thing<T> {
+            Item(T),
+            OtherItem,
+        }
+
+- And two of the most common and most useful data structures in Rust are generic enums ...
+
+        // value can be something or nothing, but you must check!
+        enum Option<T> {
+            Some(T),
+            None,
+        }
+
+        // for error handling, can be Ok or Err
+        enum Result<T, E> {
+            Ok(T),
+            Err(E),
+        }
+
+- Destructuring or unpacking enums and the data contained in them is one place where patterns are useful, and very powerful!
+    - in particular the `match { ... }` operator provides a really powerful way to work with Enums.
+
+            fn favorite_color_to_string(color: Color) -> String {
+                match color {
+                    Color::Red => "red".to_string(),
+                    Color::Blue => "blue".to_string(),
+                    Color::Yellow => "yellow".to_string(),
+                    Color::Green => "green".to_string(),
+                }
+            }
+
+    - `match` is powerful because it is exhaustive -- you must check every possible variant!
+
+- Rust patterns are helpful in working with almost any kind of data, not just enums ...
+
+        match grocery_basket.len() {
+            0 => "the grocery basket is empty",
+            1 => "only 1 item",
+            n => "lots of items",
+        }
+
+    - the above example matches any value other than 0 or 1 into `n`, and then makes `n` a local variable in that arm.
+
+- Patterns are sort of the inverse of expressions ...
+
+        let tup = (3, 4, "hello".to_string()); // create a tuple of numbers and String values
+        let (x, y, greeting) = tup; // 'destructure' `tup` into three separate variables
+
+
+
