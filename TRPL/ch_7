@@ -1,0 +1,101 @@
+Chapter 7 -- Crates and Modules
+
+- Rust has several constructs for managing growing projects and codebases
+
+    1. Packages
+    2. Crates
+    3. Modules
+
+- There are two kinds of crates ...
+
+    1. Binary crates (src/main.rs)
+    2. Library crates (src/lib.rs)
+
+- A package can have 0 or 1 library crates, and n binary crates
+
+- These constructs help manage code organization, re-use, and visibility
+
+- Let's say we want to build software for a restaurant's operations.  To create a module, use the `mod` keyword
+
+        mod restaurant {
+            mod front_of_house {
+                mod hosting {
+                    fn seat_guests() { ... }
+                }
+            }
+
+            mod back_of_house {
+                mod admin {
+                    fn pay_the_bill() { ... }
+                }
+            }
+        }
+
+        fn eat_at_restaurant() {
+            front_of_house::hosting::seat_guests();
+
+            back_of_house::admin::pay_the_bill();
+        }
+
+    
+    - in the above, note how `fn eat_at_restaurant()` calls the functions in the back_of_house and front_of_house modules.
+
+    - however, this won't yet work!  Items (structs, enums, functions, etc.) in modules are private by default.  Use the `pub` keyword
+    to make those functions callable outside the module.
+
+        mod restaurant {
+            pub mod front_of_house {
+                pub mod hosting {
+                    pub fn seat_guests() { ... }
+
+                    struct Table {
+                        zone: u32,
+                        num_seats: u32,
+                        at_the_bar: bool,
+                    }
+                }
+            }
+
+            pub mod back_of_house {
+                pub mod admin {
+                    pub fn pay_the_bill() { ... }
+                }
+            }
+        }
+
+    - Similarly, structs fields are private by default.  in the above code, Table and its fields aren't accessible outside the module.
+    To change that, use the `pub` keyword ...
+
+        pub struct Table {
+            pub zone: u32,
+            pub num_seats: u32,
+            pub at_the_bar: bool,
+        }
+
+    - If an enum is made `pub`, it's variants are automatically all `pub` as well.
+
+    - Eventually it will make sense to move module code into its own file ...
+
+        /// in src/front_of_house.rs 
+
+        mod hosting {
+            fn seat_guests() { ... }
+        }
+
+        /// in src/main.rs
+
+        // declare the mode to bring its contents into scope
+        mod front_of_house;
+
+    - Calling the `seat_guests()` function using the full path `front_of_house::hosting::seat_guests()` is clutterd.  Use the `use`
+    keyword to bring modules into scope ...
+
+        use restaurant::front_of_house::hosting;
+
+        // now can call the contents in `hosting` more simply
+
+        hosting::seat_guests()
+
+- You can manage the importing of crates using the full path or relative path
+
+// more notes to come here...
