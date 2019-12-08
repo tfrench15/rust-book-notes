@@ -1,0 +1,80 @@
+Chapter 8 -- Crates and Modules
+
+- Rust programs are made up of crates 
+- To specify an external crate, say one downloaded from crates.io, use the `extern` crate ... 
+
+        extern crate rand;
+        extern crate reqwest;
+
+- download these crates by adding them to the Cargo.toml file, with the specific version, in the [dependencies] block ...
+
+        [dependencies]
+        reqwest = "0.9.22"
+
+- Rust modules are namespaces, they are ways to organize and group code ...
+
+        mod spores {
+            pub struct Spore { ... }
+
+            pub fn produce_spore() { ... }
+
+            fn recombine() { ... }
+        }
+
+    - note that items are grouped into the `spores` mod; some items are public (marked `pub`) and others are private
+    - to access items in the `spores` mod, use `spores::{ ... }`, i.e., 
+
+        let spore = spores::produce_spore();
+
+    - you can't access private items, and items are private by default
+
+    - modules can contain other modules ...
+
+        mod spores {
+            pub mod roots {
+                // roots stuff
+            }
+
+            pub mod leaves {
+                // leaves stuff
+            }
+
+            pub mod stems {
+                // stems stuff
+            }
+        }
+
+    - often though it is better to move modules into their own files ...
+
+        // file = spores.rs 
+
+        pub struct Spore { ... }
+
+        pub fn reproduce_spore() { ... }
+
+        fn recombine() { ... }
+
+    - then, declare the mod in another file to use it ...
+
+        // file = main.rs 
+
+        mod spores;
+
+    - for nested modules, declare them in a `mod.rs` file 
+
+- Items are the building blocks of Rust; they include ...
+    1. Types
+    2. Functions
+    3. Type aliases
+    4. Constants
+    5. Modules
+    6. Imports
+
+- Create a type alias as follows ...
+
+        type Table = HashMap<String, Vec<String>>;
+
+        fn show(table: &Table) { ... }
+
+- To turn a program into a library, rename src/main.rs to src/lib.rs
+
