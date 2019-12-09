@@ -1,0 +1,69 @@
+Chapter 8 -- Common Collections
+
+- There are three kinds of Collection types covered in this chapter, that are central to Rust
+
+    1. Vectors (Vec<T>)
+    2. Strings (String and str)
+    3. HashMaps (HashMap<T, V>)
+
+- All of these types store data on the heap, are dynamic in size, and grow-able.
+
+Vectors
+
+- Vec<T>'s are great for grouping a variable amount of related data, like prices in a shopping cart.
+- Vec<T>'s are generic over the type T -- we'll cover generics in a future chapter.
+
+- To create a Vector, use the `new()` constructor or the `vec![]` macro ... 
+
+        let v: Vec<i32> = Vec::new();
+
+        let z = vec![1, 2, 3, 4, 5];
+
+    - note in the declaration of v, we annotated the type of the Vector.  But this is not usually necessary as Rust can infer the type.
+
+- You can add items to the Vec with the `push()` method ...
+
+        let mut v = vec![1, 2, 3];
+        v.push(4);
+        v.push(5);
+
+- If you need to group together different types of data in a Vector, an Enum could be useful ...
+
+        enum ShoppingCart {
+            Price(f32),
+            Category(String)
+            Full(bool)
+        }
+
+        let cart = vec![
+            ShoppingCart::Price(8.64),
+            Category("Vegetables".to_string()),
+            Full(false)
+        ];
+
+- However if you don't know the full set of potential data types ahead of time the enum method won't work.  Instead, you can 
+use trait objects, which will be covered in a later chapter.
+
+- To index into a vector and get a specific element, there are two ways of doing that ...
+
+        let v = vec![1, 2, 3, 4, 5];
+
+        let second = &v[1];  // returns reference to the second element, panics if out of range!
+        let third = v.get(2); // safer way to index a Vec, returns Option<&T>!  Some(&T) if the index exists, and None otherwise
+
+- To iterate through a vector ...
+
+        let v: vec![1, 2, 3, 4, 5];
+
+        for i in &v {
+            // do stuff
+        }
+
+        for i in &mut v {
+            // now you can mutate items in the vector
+        }
+
+- There are dozens of useful methods on the Vector type, like `pop()` for example!  Check the docs!
+
+Strings
+
