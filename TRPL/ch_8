@@ -67,3 +67,70 @@ use trait objects, which will be covered in a later chapter.
 
 Strings
 
+- Strings are much more complex than they might at first seem!
+- there is not one, but two primary String types ...
+
+    1. String
+        - owned, heap allocated
+    2. str
+        - string slice, usually borrowed (&str)
+
+- String literals are actually string slices ...
+
+        let greeting = "hello world";
+        let greeting = "hello world".to_string();
+
+- Indexing into strings doesn't actually work, because it's not always trivial how a String is represented
+in memory.
+    - A character might be one byte, or multiple bytes.  Rust makes the programmer deal with this complexity.
+
+- If you need to get at specific elements of a String, it's usually best to iterate through it ...
+
+        let greeting = "hello world".to_string();
+
+        for ch in greeting.chars() { ... }
+        for byte in greeting.bytes() { ... }
+
+- the `format!` macro is a helpful utility for formatting Strings.  It works like `println!`, but instead of writing to 
+stdout it creates a String.
+
+        let first_name = "Ferris";
+        let last_name = "the Crab";
+
+        let full_name = format!("{} {}", first_name, last_name);
+
+HashMaps
+
+- HashMaps are like associative arrays, HashTables, Dictionaries, or maps.  They allow you to store data as a key, value pair.
+- HashMaps are a little less common than Strings and Vectors, so you need to explicitly bring them into scope ...
+
+        use std::collections::HashMap;
+
+        let map = HashMap::new();
+
+- there also 
+
+- You can insert data into a HashMap using the `insert()` method ...
+
+        let map: HashMap<String, u32> = HashMap::new();
+
+        map.insert("a".to_string(), 1);
+        map.insert("b".to_string(), 2);
+
+- The Entry API is extremely useful for getting and updating values in a map.
+
+        let mut word_counts = HashMap::new();
+
+        // get the associated value for `"hello"` or insert 0
+        // then increment the value by 1
+        let mut counter = word_counts.entry("hello").or_insert(0);
+        *counter += 1;
+
+- Iterate through the <key, value> pairs in a HashMap as follows ...
+
+        for (key, value) in &map {
+            // do stuff 
+        }
+
+- as with Vectors and Strings, there are many useful methods for working with HashMaps!  Regularly peruse the docs to 
+keep these fresh in your mind.
