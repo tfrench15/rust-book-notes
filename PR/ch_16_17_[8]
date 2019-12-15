@@ -1,0 +1,95 @@
+Chapters 16, 17 -- Collections, Strings
+
+- Rust has a number of built-in collection types ...
+
+    Rust                Go              Python      Javascript
+    ----                --              ------      ----------
+    Vec<T>              slice           list        array
+    HashMap<K, V>       map[k]v         dict        object
+    HashSet<T>          ----            set         ------
+    String              string          str         string 
+
+- There are also others that are less frequently used, but helpful in some situations ...
+
+    1. VecDeque<T> -- good for FIFO queues
+    2. BTreeMap<K, V> -- keeps the keys in a sorted order
+    3. BTreeSet<K> -- like HashSet<T>, but sorted
+    4. LinkedList<T> -- a doubly linked list
+
+- These chapters mainly covered the methods, -- of which there are many -- for the primary collection types
+
+- Vec<T>
+
+    Note!  many of the methods return Options
+
+        let v = vec![1, 2, 3]; // initialize a Vec with the vec![] macro
+        let v = Vec::new(); // initialize a Vec with its constructor function
+
+        v.pop(); // pops off the last value, returns an Option
+        v.push(value); // pushes a value onto the end of the Vec 
+        v.get(idx); // gets the value at idx, where idx is usize, returns an Option
+        v.get_mut(idx); // returns a mutable reference to the value at idx
+        v.insert(idx, value); // insert value at idx
+        v.remove(idx); // remove the value at idx
+
+        v.first(); // get the first element, returns an Option, None if empty
+        v.last(); // get the last element, returns an Option, None if empty
+
+    ... there are many more useful methods on Vec's and slices.  Check the docs!
+
+- HashMap<K, V>
+
+    Note!  one of the most important ideas / constructs here is the Entry enum.  A key-value pair is known as an Entry
+
+        use std::collections::HashMap;
+
+        let map = HashMap::new(); // initialize a HashMap;
+
+        - you can also build a HashMap from an iterator using the .collect() methods
+
+        map.insert(key, value); // insert a key-value pair 
+        map.get(&key); // returns an Option containing a reference to the value
+        map.get_mut(&key); // returns an Option containing a mutable reference to the value
+        map.contains_key(&key); // returns `true` if map contains the key
+
+    As noted above, HashMap's entry API is powerful and common for working with maps ...
+
+        map.entry(key); // returns the Entry for the given key, Occupied if map contains key, and Vacant otherwise
+
+    It's very common to call a method on the entry ...
+
+        map.entry(key).or_insert(value); // returns a mutable reference to the new or existing value
+
+        let mut vote_counts: HashMap<String, usize> = HashMap::new();
+        for name in ballots {
+            let count = vote_counts.entry(name).or_insert(0);
+            *count += 1;
+        }
+
+    To iterate over a map ...
+
+        for (k, v) in map { ... } // iter over map, consume it 
+        for (k, v) in &map { ... } // iter over a reference to the map 
+        for (k, v) in &mut map { ... } // iter over a mutable reference to the map 
+
+        for k in map.keys() { ... } // iter over the map's keys by reference 
+        for v in map.values() { ... } // iter over the map's values by reference 
+        for v in map.values_mut() { ... } // iter over the map's values by mutable reference 
+
+- HashSet<T> 
+
+    - a common collection for creating and working with Sets
+    - check the documentation for all of the useful methods on HashSet<T>!
+
+- Strings and str 
+
+    - the `char` type is an important type in Rust
+    - `char` implements Copy and Clone
+    - it is common to iterate over a String using the .chars() iterator ...
+
+        let greeting = String::from("greeting);
+
+        for ch in greeting.chars() { ... }
+
+    - This chapter covers many of the most useful methods on `char` -- keep fresh on these by consulting the online documentation!
+    - This chapter also covers many of the most useful methods on String and &str ...
