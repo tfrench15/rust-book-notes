@@ -116,4 +116,4 @@ Chapter 9 -- Error Handling
             Ok(s)
         }
 
-    - Note!  Since `?` is propagating errors up to the calling code, it can only be used inside errors that return Result 
+    - Note!  Since `?` is propagating errors up to the calling code, it can only be used inside functions that return Result 
