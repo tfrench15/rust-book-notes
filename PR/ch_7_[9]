@@ -1,0 +1,100 @@
+Chapter 7 -- Error Handling
+
+- There are two ways to handle errors in Rust programs ...
+
+    1. panic and crash the program immediately
+    2. using the Result type
+
+- The authors of Programming Rust boil the question down to a simple rule of thumb: don't panic.
+
+- The idea is that you should let the caller decide how they want to handle a program error that encounters an error.  It's more flexible and gives you more control if the 
+default behavior is to return a Result.
+
+- To panic use the panic!() macro ...
+
+        fn divide(a: i32, b: i32) -> i32 {
+            if b == 0 {
+                panic!("can't divide bh zero...");
+            }
+
+            a / b 
+        }
+
+- The Result type is an Enum defined as follows ...
+
+        enum Result<T, E> {
+            Ok(T),
+            Err(E),
+        }
+    
+    - it is generic over T (the type returned by a success, or `Ok` variant) and E (the error returned by a failure, or `Err` variant)
+    
+- A function that returns a Result has a signature that looks something like ...
+
+        fn get_weather(location: LatLng) -> Result<WeatherReport, io::Error> {
+            // do stuff
+        }
+
+    - this function will return either Ok(WeatherReport) or Err(io::Error)
+
+- to work with a Result and use the data inside, the usual `match { ... }` expression is ubiquitous ...
+
+        match get_weather(hometown) {
+            Ok(report) => {
+                display_weather(hometown, &report);
+            },
+            Err(err) => {
+                println!("failed to get weather: {}", err);
+                schedule_weather_retry();
+            },
+        }
+
+- Using `match` to handle errors can be a bit verbose, so Rust provides the `?` operator to propagate the Results ...
+
+        let weather_report = get_weather(hometown)?;
+        
+    - however, you can't use the `?` operator unless the function returns a Result 
+
+- There are a bunch of useful methods for working with Results too ...
+
+        result.is_ok(); // true if the Result is Ok(T)
+        result.is_err(); // true if the Result is Err(E)
+
+        result.ok(); // returns Option<T>, Some(T) if the Result is Ok(T), and None if it's an error
+        result.err(); // returns Option<E>, if there's an error result 
+
+        result.unwrap_or(fallback); // returns the success value, or `fallback`
+        result.unwrap_or_else(fallback_fn); // returns the success value or calls a function or closure
+
+        result.unwrap(); // unwraps the Result returning the success value; but be careful!  this panics if Result is Err(E)
+        result.expect(message); // unwraps the Result's success value, or panics with the passed in message 
+
+- You can also define a new, custom error type ...
+
+        #[derive(Clone, Debug)]
+        pub struct JsonError {
+            pub line: usize,
+            pub message: String,
+            pub column: usize
+        }
+
+    - However to get the usual behavior you'd expect (like what you get from the errors in the standard library), you need to implement some Traits ...
+
+        use std::{error, fmt};
+
+        // Errors should be printable ...
+        impl fmt::Display for JsonError {
+            fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+                // define the behavior
+            }
+        }
+
+        // Errors should implement the std::error::Error trait ...
+        impl error::Error for JsonError {
+            fn description(&self) -> &str {
+                &self.message 
+            }
+        }
+
+- In summary Results are incredibly robust and make error handling a safe, painless process.  Use `match`, the `?` operator, and the methods defined on `Result<T, E>` 
+to write great error handling code in Rust 
