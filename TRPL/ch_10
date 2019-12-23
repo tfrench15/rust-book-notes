@@ -1,0 +1,181 @@
+Chapter 10 -- Generics, Traits, and Lifetimes
+
+- This is a big chapter with lots of important content!
+
+1. Generics 
+
+- Programming with Generics gives you a powerful mechanism to avoid code duplication
+
+- Let's say you have a function that scans for largest item in a list ...
+
+        fn largest_i32(list: &[i32]) -> i32 {
+            let mut largest = list[0];
+
+            for &number in list.iter() {
+                if number > largest {
+                    largest = number;
+                }
+            }
+
+            largest 
+        }
+
+    ... and then you have another function for getting the largest character ...
+
+        fn largest_char(list: &[char]) -> char {
+            let mut largest = list[0];
+
+            for &ch in list.iter() {
+                if ch > largest {
+                    largest = ch;
+                }
+            }
+
+            largest 
+        }
+
+    - this code duplication is unnecessary!  Use generics instead ...
+
+        fn largest<T>(list: &[T]) -> T {
+            let mut largest = list[0];
+
+            for &item in list.iter() {
+                if item > largest {
+                    largest = item;
+                }
+            }
+
+            largest 
+        }
+
+    - this function is "generic over the type T"
+    - Note that this example won't compile yet, because we can't guarantee the type `T` is comparable -- it isn't guaranteed to implement `std::cmp::PartialOrd`
+        - we can fix this with Trait Bounds ...
+
+        fn largest<T: Copy + PartialOrd>(list: &[T]) -> T {
+            // implementation 
+        }
+
+- Structs can be defined using generics ...
+
+        struct Point<T> {
+            x: T,
+            y: T,
+        }
+
+    ... including with multiple, different generic types ...
+
+        struct Point<T, U> {
+            x: T,
+            y: U,
+        }
+
+- So, too, can Enums, as we've seen with two of the most common Enums in Rust ...
+
+        enum Option<T> {
+            Some(T),
+            None,
+        }
+
+        enum Result<T, E> {
+            Ok(T),
+            Err(E),
+        }
+
+- To define generic methods ...
+
+        impl<T> Point<T> {
+            fn x(&self) -> &T {
+                &self.x
+            }
+        }
+
+        impl Point<f32> {
+            // this method will only be available for Point<f32>!
+            fn distance_from_origin(&self) -> f32 {
+                // calculation
+            }
+        }
+
+- In Rust, code with generics is extremely efficient because of monomorphization; the compiler identifies what types are actually used in your generic code 
+and is able to specify the concrete types, so there is no runtime cost
+
+2. Traits 
+
+- Traits allow you to specify the behavior a type is expected to have; they provide another tool for building abstractions
+
+        // define a `Summary` trait which requires the implementation of a `summarize()` method 
+        pub trait Summary {
+            fn summarize(&self) -> String;
+        }
+
+        struct NewsArticle {
+            author: String,
+            headline: String,
+            content: String,
+            location: String,
+        }
+
+        struct Tweet {
+            username: String,
+            content: String,
+            reply: bool,
+            retweet: bool,
+        }
+
+        impl Summary for NewsArticle {
+            fn summarize(&self) -> String {
+                // implement the method!
+            }
+        }
+
+        impl Summary for Tweet {
+            fn summarize(&self) -> String {
+                // implement the method! 
+            }
+        }
+
+    - this allows you to flexibly pass in different types to a function that expects a `Summary` type ...
+
+        fn notify<T: Summary>(item: T) -> String {
+            // --snip--
+        }
+
+    ... or, if your parameter requires multiple Trait Bounds ...
+
+        fn notify<T: Display + Summary>(item: T) -> String {
+            // --snip--
+        }
+
+    - this can start to get unwieldy, which leads to hard-to-read function signatures.  If this happens, clear things up with a `where` clause ...
+
+        fn some_function<T, U>(first: T, second: U) -> i32 
+            where T: Display + Clone,
+                  U: Clone + Debug
+        {
+            // function code goes here ...
+        }
+
+    - You can also use Trait Bounds to conditionally implement methods ...
+
+        use std::fmt::Display;
+
+        struct Pair<T> {
+            x: T,
+            y: T,
+        }
+
+        impl<T> Pair<T> {
+            fn new(x: T, y: T) -> Self {
+                Pair {
+                    x,
+                    y,
+                }
+            }
+        }
+
+        impl<T: Display + PartialOrd> Pair<T> {
+            fn cmp_display(&self) {
+                // method will only be available for T: Display + PartialOrd!
+            }
+        }
