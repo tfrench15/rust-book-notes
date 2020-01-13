@@ -1,0 +1,87 @@
+Chapter 11 -- Writing Automated Tests
+
+- Remember, testing is incredibly useful for proving the existence of bugs, but not for proving their absence!
+
+- In Rust, tests are just Rust code, and a few macros from the standard library are incredibly useful ...
+
+- assert!(), assert_eq!(), assert_ne!()
+
+    - assert!(arg) panics if `arg` is not `true`
+    - assert_eq!(arg1, arg2) panics if `arg1` is not equal to `arg2`
+    - assert_ne!(arg1, arg2) panics if `arg1` is equal to `arg2`
+
+- Note how to mark a function as a test function with the #[test] attribute ...
+
+        #[cfg(test)]
+        mod tests {
+            use super::*; // bring hypothetical parent module code into scope
+
+            #[test]
+            fn it_works() {
+                let trivial = true;
+                assert!(trivial);
+            }
+
+            #[test]
+            fn example_with_equal() {
+                assert_eq!(4, add_two(2));
+            }
+
+            #[test]
+            fn example_with_not_equal() {
+                assert_ne!(5, add_two(2));
+            }
+        }
+
+- The `assert_ne!()` can be less precise; it's usually used in cases where you know input to a function will be changed
+but are not sure exactly how.
+
+- You can also use the Result<T, E> enum in test code ...
+
+        #[cfg(test)]
+        mod tests {
+            use super::*;
+
+            #[test]
+            fn test_returns_result() -> Result<(), String> {
+                if 4 == add_two(2) {
+                    Ok(()) // test passes
+                } else {
+                    Err("bad math") // test fails
+                }
+            }
+        }
+
+- Organizing Test Code 
+    - Unit Tests 
+        - Unit Tests usually test small, individual pieces of code in isolation
+        - It's a convention to place unit test code in the same file as the code it is testing, inside a `tests` module like so ...
+
+            fn do_stuff() {
+                // function to be tested
+            }
+
+            fn do_other_stuff {
+                // other function to be tested 
+            }
+
+            #[cfg(test)]
+            mod tests {
+                #[test]
+                fn test_do_stuff() {
+                    // test the function 
+                }
+
+                #[test]
+                fn test_do_other_stuff() {
+                    // test the other function 
+                }
+            }
+
+    - Integration Tests
+        - Integration Tests are designed to test that your code still works when it's all integrated together
+        - Integegration Tests are external to your library, so they only test/use your library's public API
+        - Place integration tests in a separate `tests` directory, which is special in Rust 
+        - You can't have integration tests for binary crates; instead, your Rust project can have a small `main.rs` file 
+        with logic that calls out to a `lib.rs` file 
+        
