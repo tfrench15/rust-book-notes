@@ -1,0 +1,144 @@
+Chapter 12 -- An I/O Project: Building a Command Line Program
+
+- In this chapter we'll build a simple version of `grep` using the Rust skills covered so far
+- Key Requirements
+    - take in a file, and a query param representing a string we'll search for as arguments
+    from the command line 
+    - parse the args
+    - search the file for the query 
+    - return a vector of lines that match
+    - build a function that does case-sensitive searching, and case-insensitive searching
+
+- We'll have a `main.rs` file and a `lib.rs` file 
+    - `main.rs` has limited responsibility -- just call a `run()` function provided by the library
+    - `lib.rs` holds the logic for the program, and is testable!
+
+- In `lib.rs` ...
+
+        use std::env;
+        use std::error::Error;
+        use std::fs;
+
+        // Group configuration data together
+        pub struct Config {
+            pub query: String,
+            pub filename: String,
+            pub case_sensitive: bool,
+        }
+
+        // Provide a function for creating a new Config struct, with error handling
+        impl Config {
+            pub fn new(args: &[String]) -> Result<Config, &'static str> {
+                if args.len() < 3 {
+                    return Err("not enough arguments");
+                }
+                let query = args[1].clone();
+                let filename = args[2].clone();
+
+                let case_sensitive = env::var("CASE_INSENSITIVE").is_err();
+
+                Ok(Config { query, filename, case_sensitive })
+            }
+        }
+
+        // Provide a public function for running the program that `main()` will call
+        pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
+            let contents = fs::read_to_string(config.filename)?;
+
+            let results = if config.case_sensitive {
+                search_case_sensitive(&config.query, &contents)
+            } else {
+                search_case_insensitive(&config.query, &contents)
+            };
+
+            for line in results {
+                println!("{}", line);
+            }
+
+            Ok(())
+        }
+
+        // Create functions to search the file for the query, both in the case_sensitive and case_insensitive 
+        // states
+        pub fn search_case_insensitive<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
+            let query = query.to_lowercase();
+            let mut results = Vec::new();
+
+            for line in contents.lines() {
+                if line.to_lowercase().contains(&query) {
+                    results.push(line);
+                }
+            }
+
+            results
+        }
+
+        pub fn search_case_sensitive<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
+            let mut results = Vec::new();
+
+            for line in contents.lines() {
+                if line.contains(query) {
+                    results.push(line);
+                }
+            }
+
+            results
+        }
+
+        // Create a tests module
+
+        #[cfg(test)]
+        mod tests {
+            use super::*
+
+            #[test]
+            fn case_sensitive() {
+                let query = "duct";
+                let contents = "\
+        Rust:
+        safe, fast, productive.
+        Pick three.
+        Duct tape.";
+
+                assert_eq!(
+                    vec!["safe, fast, productive"], 
+                    search_case_sensitive(query, contents)
+                );
+            }
+
+            #[test]
+            fn case_insensitive() {
+                let query = "rUsT";
+                let contents = "\
+        Rust:
+        safe, fast, productive.
+        Pick three.
+        Trust me.";
+
+                assert_eq!(
+                    vec!["Rust:", "Trust me."],
+                    search_case_insensitive(query, contents)
+                );
+            }
+        }
+
+- In `main.rs` ...
+
+        use std::env;
+        use std::process;
+
+        use minigrep::Config;
+
+        fn main() {
+            let args: Vec<String> = env::args().collect();
+
+            let config = Config::new(&args).unwrap_or_else(|err| {
+                eprintln!("Problem parsing arguments: {}", err);
+                process::exit(1);
+            })
+
+            if let Err(e) = minigrep::run(config) {
+                eprintln!("Application error: {}", e);
+                process::exit(1);
+            }
+        }
